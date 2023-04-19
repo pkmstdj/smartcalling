@@ -14,21 +14,21 @@ class _pageChat extends State<pageChat> {
   void initState() {
     super.initState();
     List<ChatMessage> list = [];
-    list.add(ChatMessage(sender: 'John', content: '1111111111'));
-    list.add(ChatMessage(sender: '내이름', content: '22222222222222222222222222222222222222222222222222222222222'));
-    list.add(ChatMessage(sender: '내이름', content: '33333333333333333333333333333333333333333333333333333333333333'));
-    list.add(ChatMessage(sender: 'John', content: '444444444444444'));
-    list.add(ChatMessage(sender: 'John', content: '555555555555555555'));
-    list.add(ChatMessage(sender: '내이름', content: '66666666666666666666666666666666666666666666666666666666'));
-    list.add(ChatMessage(sender: '내이름', content: '7777777777777777777777777777777777777777777777777777777777'));
-    list.add(ChatMessage(sender: 'John', content: '888888888888888888888888888888888888888888888888888888888888888888'));
-    list.add(ChatMessage(sender: 'John', content: '8888888888'));
-    list.add(ChatMessage(sender: '내이름', content: '9999999999999999999999999'));
-    list.add(ChatMessage(sender: '내이름', content: '99999999999999999999999999'));
-    list.add(ChatMessage(sender: 'John', content: '000000000'));
-    list.add(ChatMessage(sender: 'John', content: '0000000000'));
+    list.add(ChatMessage(senderName: 'ABC', content: '1111111111', dateTime: DateTime(2023,4,11,18,18), isLiked: false, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '22222222222222222222222222222222222222222222222222222222222', dateTime: DateTime(2023,4,12,18,18), isLiked: false, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '33333333333333333333333333333333333333333333333333333333333333', dateTime: DateTime(2023,4,13,18,18), isLiked: false, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '444444444444444', dateTime: DateTime(2023,4,14,18,18), isLiked: true, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '555555555555555555', dateTime: DateTime(2023,4,14,18,18), isLiked: true, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '66666666666666666666666666666666666666666666666666666666', dateTime: DateTime(2023,4,14,18,18), isLiked: false, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '7777777777777777777777777777777777777777777777777777777777', dateTime: DateTime(2023,4,15,18,18), isLiked: false, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '888888888888888888888888888888888888888888888888888888888888888888', dateTime: DateTime(2023,4,18,18,18), isLiked: false, unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '8888888888', dateTime: DateTime(2023,4,18,18,18), isLiked: true, unread: true, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '9999999999999999999999999', dateTime: DateTime(2023,4,18,18,18), isLiked: false, unread: true, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '99999999999999999999999999', dateTime: DateTime(2023,4,18,18,18), isLiked: false, unread: true, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '000000000', dateTime: DateTime(2023,4,18,18,18), isLiked: false, unread: true, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '0000000000', dateTime: DateTime(2023,4,18,18,18), isLiked: false, unread: true, currentUser: 'ABC'));
 
-    _chatRooms.add(ChatRoom(name: 'John', profileImage: 'Hello!', messages: list) );
+    _chatRooms.add(ChatRoom(roomName: 'John', messages: list) );
   }
 
   @override
@@ -51,14 +51,14 @@ class ChatRoomListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       // leading: CircleAvatar(child: Text(chatRoom.sender[0])),
-      title: Text(chatRoom.name),
+      title: Text(chatRoom.roomName),
       onTap: () {
         // 채팅방 선택 시 동작
         // TODO: 채팅방으로 이동하거나 채팅을 시작하는 로직 추가
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PageChatRoom(chatRoom: chatRoom),
+            builder: (context) => PageChatRoom(chatRoom: chatRoom, currentUser: 'ABC',),
           ),
         );
       },

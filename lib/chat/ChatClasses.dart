@@ -1,16 +1,40 @@
 
 class ChatMessage {
-  final String sender; // 발신자 이름
-  final String content; // 채팅 내용
+  final String senderName;
+  final String content;
+  final bool isLiked;
+  bool unread;
+  final DateTime dateTime;
+  final bool isMine;
 
-  ChatMessage({required this.sender, required this.content});
+  ChatMessage({
+    required this.senderName,
+    required this.content,
+    required this.isLiked,
+    required this.unread,
+    required this.dateTime,
+    required String currentUser,
+  }) : isMine = senderName == currentUser;
 }
 
 class ChatRoom {
-  final String name; // 채팅방 이름
-  final String profileImage; // 프로필 이미지 URL
-  final List<ChatMessage> messages; // 채팅 메시지 리스트
-
-  ChatRoom({required this.name, required this.profileImage, required this.messages});
+  String roomName;
+  List<ChatMessage> messages;
+  ChatRoom({required this.roomName, required this.messages});
 }
 
+class ChatMessageData {
+  final String senderName;
+  final String content;
+  final bool isLiked;
+  bool unread;
+  final DateTime dateTime;
+
+  ChatMessageData({
+    required this.senderName,
+    required this.content,
+    required this.isLiked,
+    required this.unread,
+    required this.dateTime,
+  });
+}
