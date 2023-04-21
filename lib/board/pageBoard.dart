@@ -37,9 +37,9 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
                         ],
                         physics: NeverScrollableScrollPhysics(),
                         controller: _tabController,
-                        indicatorColor: Colors.green.shade400,
+                        indicatorColor: Colors.greenAccent,
                         unselectedLabelColor: Colors.grey,
-                        labelColor: Colors.green.shade400,
+                        labelColor: Colors.greenAccent,
                       ),
                     ),
                     Expanded(

@@ -53,7 +53,7 @@ class itemPeople extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Icon(Icons.star_outline_rounded, size: 40, color: Colors.green.shade400),
+                      Icon(Icons.star_outline_rounded, size: 40, color: Colors.greenAccent),
                     ],
                   )
               )

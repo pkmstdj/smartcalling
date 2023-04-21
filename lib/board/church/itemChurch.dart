@@ -83,10 +83,10 @@ class itemChurch extends StatelessWidget {
                         ),
                       ),
                       if(mPick)...[
-                        Icon(Icons.star_rounded, size: 40, color: Colors.green.shade400),
+                        Icon(Icons.star_rounded, size: 40, color: Colors.greenAccent),
                       ]
                       else... [
-                        Icon(Icons.star_outline_rounded, size: 40, color: Colors.green.shade400),
+                        Icon(Icons.star_outline_rounded, size: 40, color: Colors.greenAccent),
                       ]
                     ],
                   )
@@ -158,10 +158,10 @@ class itemChurch extends StatelessWidget {
                         ),
                       ),
                       if(mPick)...[
-                        Icon(Icons.star_rounded, size: 40, color: Colors.green.shade100,),
+                        Icon(Icons.star_rounded, size: 40, color: Colors.greenAccent.shade100,),
                       ]
                       else... [
-                        Icon(Icons.star_outline_rounded, size: 40, color: Colors.green.shade100),
+                        Icon(Icons.star_outline_rounded, size: 40, color: Colors.greenAccent.shade100),
                       ]
                     ],
                   )

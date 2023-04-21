@@ -17,18 +17,14 @@ class _pageChurchInfo extends State<pageChurchInfo> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        foregroundColor: Colors.green.shade400,
+        foregroundColor: Colors.greenAccent,
         title: Container(child: Text('수원삼일교회', style: TextStyle( fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 0.3), ), alignment: Alignment.center,),
         actions: [
-          Padding(padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-            child: SizedBox(
-              width: 50,
-              child: MaterialButton(
-                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                onPressed: () {},
-                child: Icon(Icons.star_outline_rounded, color: Colors.green.shade400, size: 36,),
-              )
-            )
+          IconButton(
+            icon: Icon(Icons.star_outline_rounded),
+            color: Colors.greenAccent,
+            onPressed: () {
+            },
           ),
         ],
       ),
@@ -134,7 +130,7 @@ class _pageChurchInfo extends State<pageChurchInfo> {
                     width: double.maxFinite,
                     child: MaterialButton(
                       onPressed: () {},
-                      color: Colors.green.shade400,
+                      color: Colors.greenAccent,
                       shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(7.0)),
                       child: Container(
                         padding: EdgeInsets.fromLTRB(0, 15, 0, 15),

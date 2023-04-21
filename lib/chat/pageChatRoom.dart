@@ -35,7 +35,7 @@ class _PageChatRoomState extends State<PageChatRoom> {
 
   Widget _buildMessage(ChatMessage message) {
     final isMyMessage = message.senderName == widget.currentUser;
-    final backgroundColor = isMyMessage ? Colors.green[100] : Colors.white;
+    final backgroundColor = isMyMessage ? Colors.greenAccent[100] : Colors.white;
     final align = isMyMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start;
     final borderRadius = isMyMessage ? BorderRadius.only(
       topLeft: Radius.circular(16.0),
@@ -206,11 +206,33 @@ class _PageChatRoomState extends State<PageChatRoom> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatRoom.roomName),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: Colors.greenAccent,
+          icon: Icon(Icons.arrow_back),
+        ),
+        title: PreferredSize(
+          preferredSize: const Size.fromHeight(0.0),
+          child: Text(widget.chatRoom.roomName, style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.greenAccent), maxLines: 1,),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.assignment),
+            color: Colors.greenAccent,
+            onPressed: () {
+              _showPopup(context);
+            },
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -228,12 +250,52 @@ class _PageChatRoomState extends State<PageChatRoom> {
       ),
     );
   }
+
+
+  void _showPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                InkWell(
+                  onTap: () {
+                    // 이력서 요청하기 기능 구현
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('이력서 요청하기'),
+                  ),
+                ),
+                SizedBox(height: 12.0), // 버튼 사이의 틈
+                InkWell(
+                  onTap: () {
+                    // 이력서 전달하기 기능 구현
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('이력서 전달하기'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   void _handleSubmit(String text) {
     _textController.clear();
     final message = ChatMessage(
       senderName: widget.currentUser,
       content: text,
-      isLiked: false,
       unread: true,
       dateTime: DateTime.now(),
       currentUser: widget.currentUser,
