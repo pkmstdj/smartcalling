@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smartcalling/board/church/pageChurchInfo.dart';
+import '../../main.dart';
+import 'pageChurchInfo.dart';
 
 class itemChurch extends StatelessWidget {
   const itemChurch({
@@ -25,8 +26,25 @@ class itemChurch extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => pageChurchInfo()));
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => PageChurchInfo(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              var begin = Offset(0.0, 1.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+            transitionDuration: Duration(milliseconds: 500),
+          ),
+        );
       },
       child: Padding(
         padding: EdgeInsets.fromLTRB(9, 1, 9, 1),
@@ -83,10 +101,10 @@ class itemChurch extends StatelessWidget {
                         ),
                       ),
                       if(mPick)...[
-                        Icon(Icons.star_rounded, size: 40, color: Colors.greenAccent),
+                        Icon(Icons.star_rounded, size: 40, color: customGreenAccent),
                       ]
                       else... [
-                        Icon(Icons.star_outline_rounded, size: 40, color: Colors.greenAccent),
+                        Icon(Icons.star_outline_rounded, size: 40, color: customGreenAccent),
                       ]
                     ],
                   )
@@ -158,10 +176,10 @@ class itemChurch extends StatelessWidget {
                         ),
                       ),
                       if(mPick)...[
-                        Icon(Icons.star_rounded, size: 40, color: Colors.greenAccent.shade100,),
+                        Icon(Icons.star_rounded, size: 40, color: customGreenAccent.shade50,),
                       ]
                       else... [
-                        Icon(Icons.star_outline_rounded, size: 40, color: Colors.greenAccent.shade100),
+                        Icon(Icons.star_outline_rounded, size: 40, color: customGreenAccent.shade100),
                       ]
                     ],
                   )

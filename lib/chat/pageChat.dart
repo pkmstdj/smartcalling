@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../main.dart';
 import 'pageChatRoom.dart';
 import 'ChatClasses.dart';
 
@@ -16,14 +17,17 @@ class _pageChat extends State<pageChat> {
     super.initState();
     List<ChatMessage> list = [];
     list.add(ChatMessage(senderName: 'ABC', content: '안녕하십니까.', dateTime: DateTime(2023,4,11,18,18), unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '안녕하십니까.', dateTime: DateTime(2023,4,11,18,18), unread: false, currentUser: 'ABC'));
     list.add(ChatMessage(senderName: 'ABC', content: '어쩌구 저쩌구에 지원하겠습니다.어쩌구 저쩌구에 지원하겠습니다.어쩌구 저쩌구에 지원하겠습니다.', dateTime: DateTime(2023,4,12,18,18), unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '어쩌구 저쩌구에 지원하겠습니다.어쩌구 저쩌구에 지원하겠습니다.어쩌구 저쩌구에 지원하겠습니다.', dateTime: DateTime(2023,4,12,18,18), unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.', dateTime: DateTime(2023,4,13,18,18), unread: false, currentUser: 'ABC'));
     list.add(ChatMessage(senderName: 'DEF', content: '좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.좋아요.', dateTime: DateTime(2023,4,13,18,18), unread: false, currentUser: 'ABC'));
     list.add(ChatMessage(senderName: 'DEF', content: '이력서를 보내주세요', dateTime: DateTime(2023,4,14,18,18), unread: false, currentUser: 'ABC'));
     list.add(ChatMessage(senderName: 'DEF', content: '이력서를 보내주세요', dateTime: DateTime(2023,4,14,18,18), unread: false, currentUser: 'ABC'));
-    list.add(ChatMessage(senderName: 'DEF', content: '이력서를 보내주세요', dateTime: DateTime(2023,4,14,18,18), unread: false, currentUser: 'ABC'));
-    list.add(ChatMessage(senderName: 'ABC', content: '이력서를 열람 권한이 등록되었습니다.', dateTime: DateTime(2023,4,14,18,18), unread: false, currentUser: 'ABC'));
-    list.add(ChatMessage(senderName: 'ABC', content: '잘 부탁 드립니다.', dateTime: DateTime(2023,4,14,18,18), unread: false, currentUser: 'ABC'));
-    list.add(ChatMessage(senderName: 'ABC', content: '여보세요?', dateTime: DateTime(2023,4,14,18,18), unread: true, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'DEF', content: '이력서를 보내주세요', dateTime: DateTime(2023,4,14,18,19), unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '이력서를 열람 권한이 등록되었습니다.', dateTime: DateTime(2023,4,14,17,18), unread: false, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '잘 부탁 드립니다.', dateTime: DateTime(2023,4,14,18,18), unread: true, currentUser: 'ABC'));
+    list.add(ChatMessage(senderName: 'ABC', content: '여보세요?', dateTime: DateTime(2023,4,14,19,18), unread: true, currentUser: 'ABC'));
 
     _chatRooms.add(ChatRoom(roomName: '박범순', messages: list) );
     _chatRooms.add(ChatRoom(roomName: '박범순', messages: list) );
@@ -38,7 +42,7 @@ class _pageChat extends State<pageChat> {
         title:
         PreferredSize(
           preferredSize: const Size.fromHeight(0.0),
-          child: Text("채팅 목록", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.greenAccent), maxLines: 1,),
+          child: Text("채팅 목록", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
         ),
       ),
       // body: ListView.builder(
@@ -81,10 +85,24 @@ class ChatRoomListItem extends StatelessWidget {
       onTap: () {
         // 채팅방 선택 시 동작
         // TODO: 채팅방으로 이동하거나 채팅을 시작하는 로직 추가
+
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => PageChatRoom(chatRoom: chatRoom, currentUser: 'ABC',),
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => PageChatRoom(chatRoom: chatRoom, currentUser: 'ABC',),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              var begin = Offset(0.0, 1.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+            transitionDuration: Duration(milliseconds: 500),
           ),
         );
       },

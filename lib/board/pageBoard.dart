@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smartcalling/board/church/pageChurch.dart';
 import 'package:smartcalling/board/people/pagePeople.dart';
 
+import '../main.dart';
+
 
 class pageBoard extends StatefulWidget {
   @override
@@ -37,9 +39,9 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
                         ],
                         physics: NeverScrollableScrollPhysics(),
                         controller: _tabController,
-                        indicatorColor: Colors.greenAccent,
+                        indicatorColor: customGreenAccent,
                         unselectedLabelColor: Colors.grey,
-                        labelColor: Colors.greenAccent,
+                        labelColor: customGreenAccent,
                       ),
                     ),
                     Expanded(

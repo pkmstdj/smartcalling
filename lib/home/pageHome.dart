@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 class pageHome extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -58,7 +60,7 @@ class _pageHome extends State<pageHome> {
           title:
           PreferredSize(
             preferredSize: const Size.fromHeight(0.0),
-            child: Text("스마트 청빙", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.greenAccent), maxLines: 1,),
+            child: Text("스마트 청빙", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
           ),
         ),
 
@@ -73,7 +75,7 @@ class _pageHome extends State<pageHome> {
                   '공지사항',
                   style: TextStyle(
                     fontSize: 18.0,
-                    color: Colors.greenAccent,
+                    color: customGreenAccent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -84,7 +86,10 @@ class _pageHome extends State<pageHome> {
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
                       title: Text(_noticeList[index]['title']),
-                      trailing: Text((_noticeList[index]['date'] as DateTime).toIso8601String().substring(0, 10)),
+                      subtitle: Text((_noticeList[index]['date'] as DateTime).toIso8601String().substring(0, 10)),
+                      onTap: (){
+
+                      },
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
@@ -99,7 +104,7 @@ class _pageHome extends State<pageHome> {
                   '수련회 & 컨퍼런스 정보',
                   style: TextStyle(
                     fontSize: 18.0,
-                    color: Colors.greenAccent,
+                    color: customGreenAccent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -152,11 +157,11 @@ class _pageHome extends State<pageHome> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: _currentPageIndexA == index
-                                      ? Colors.greenAccent
+                                      ? customGreenAccent
                                       : Colors.grey[300],
                                   border: Border.all(
                                     color: _currentPageIndexA == index
-                                        ? Colors.greenAccent!
+                                        ? customGreenAccent!
                                         : Colors.grey[700]!,
                                     width: 2.0,
                                   ),
@@ -177,7 +182,7 @@ class _pageHome extends State<pageHome> {
                   '이벤트',
                   style: TextStyle(
                     fontSize: 18.0,
-                    color: Colors.greenAccent,
+                    color: customGreenAccent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -230,11 +235,11 @@ class _pageHome extends State<pageHome> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: _currentPageIndexB == index
-                                      ? Colors.greenAccent
+                                      ? customGreenAccent
                                       : Colors.grey[300],
                                   border: Border.all(
                                     color: _currentPageIndexB == index
-                                        ? Colors.greenAccent!
+                                        ? customGreenAccent!
                                         : Colors.grey[700]!,
                                     width: 2.0,
                                   ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../main.dart';
+
 class pagePeopleInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,17 +14,17 @@ class pagePeopleInfo extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            color: Colors.greenAccent,
+            color: customGreenAccent,
             icon: Icon(Icons.arrow_back),
           ),
           title: PreferredSize(
             preferredSize: const Size.fromHeight(0.0),
-            child: Text("사역자 이력서", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.greenAccent), maxLines: 1,),
+            child: Text("사역자 이력서", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
           ),
           actions: [
             IconButton(
               icon: Icon(Icons.star_outline_rounded),
-              color: Colors.greenAccent,
+              color: customGreenAccent,
               onPressed: () {
               },
             ),
@@ -69,18 +71,18 @@ class pagePeopleInfo extends StatelessWidget {
                             '먹이를 찾아 산기슭을 어슬렁거리는 하이에나를 본 일이 있는가 짐승의 썩은 고기만을 찾아다니는 산기슭의 하이에나 나는 하이에나가 아니라 표범이고 싶다 산정 높이 올라가 굶어서 얼어 죽는 눈 덮인 킬리만자로의 그 표범이고 싶다 자고나면 위대해지고 자고나면 초라해지는 나는 지금 지구의 어두운 모퉁이에서 잠시 쉬고 있다 먹이를 찾아 산기슭을 어슬렁거리는 하이에나를 본 일이 있는가 짐승의 썩은 고기만을 찾아다니는 산기슭의 하이에나 나는 하이에나가 아니라 표범이고 싶다 산정 높이 올라가 굶어서 얼어 죽는 눈 덮인 킬리만자로의 그 표범이고 싶다 자고나면 위대해지고 자고나면 초라해지는 나는 지금 지구의 어두운 모퉁이에서 잠시 쉬고 있다',
                             style: TextStyle(fontSize: 18),
                           ),
-                          Divider(),
                         ],
                       ),
                     ),
                   ),
                 ),
+                Divider(),
                 Padding(padding: EdgeInsets.all(20.0), 
                 child: SizedBox(
                   width: double.maxFinite,
                   child: MaterialButton(
                     onPressed: () {},
-                    color: Colors.greenAccent,
+                    color: customGreenAccent,
                     shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(7.0)),
                     child: Container(
                       padding: EdgeInsets.fromLTRB(0, 15, 0, 15),

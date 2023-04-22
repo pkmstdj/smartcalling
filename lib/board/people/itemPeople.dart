@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:smartcalling/board/people/pagePeopleInfo.dart';
 
+import '../../main.dart';
+
 class itemPeople extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => pagePeopleInfo()));
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => pagePeopleInfo(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              var begin = Offset(0.0, 1.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+            transitionDuration: Duration(milliseconds: 500),
+          ),
+        );
       },
       child: Padding(
         padding: EdgeInsets.fromLTRB(9, 1, 9, 1),
@@ -53,7 +72,7 @@ class itemPeople extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Icon(Icons.star_outline_rounded, size: 40, color: Colors.greenAccent),
+                      Icon(Icons.star_outline_rounded, size: 40, color: customGreenAccent),
                     ],
                   )
               )
