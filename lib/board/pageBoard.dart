@@ -13,6 +13,19 @@ class pageBoard extends StatefulWidget {
 }
 class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
   late TabController _tabController;
+  bool _showPickedOnly = false;
+
+  List<Widget> get _items => [
+    pageChurch(showPickedOnly: _showPickedOnly),
+    pagePeople(),
+  ];
+
+  void _togglePickedOnly() {
+    setState(() {
+      _showPickedOnly = !_showPickedOnly;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,8 +61,8 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
                         flex: 1,
                         child: MaterialButton(
                           padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                          onPressed: () {},
-                          child: Icon(Icons.star_outline_rounded, color: Colors.grey, size: 30,),
+                          onPressed: _togglePickedOnly,
+                          child: Icon(_showPickedOnly ? Icons.star_rounded : Icons.star_outline_rounded, color: _showPickedOnly ? customGreenAccent : Colors.grey, size: 30,),
                         )
                     ),
                     Expanded(
@@ -57,7 +70,7 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
                         child: MaterialButton(
                           padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                           onPressed: () {},
-                          child: Icon(Icons.search, color: Colors.grey, size: 30,),
+                          child: Icon(Icons.filter_alt_outlined, color: Colors.grey, size: 30,),
                         )
                     ),
                     SizedBox(width: 7,)
@@ -67,12 +80,10 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
           ),
           backgroundColor: Color(0xfff5f5f5),
           body: SafeArea(
-            child: TabBarView(children: [
-              pageChurch(),
-              pagePeople(),
-            ],
-            physics: NeverScrollableScrollPhysics(),
-            controller: _tabController,),
+            child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _tabController,
+              children: _items,),
           )
       ),
     );

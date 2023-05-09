@@ -10,7 +10,7 @@ class pageChat extends StatefulWidget {
 }
 
 class _pageChat extends State<pageChat> {
-  List<ChatRoom> _chatRooms = []; // 채팅방 목록
+  final List<ChatRoom> _chatRooms = []; // 채팅방 목록
 
   @override
   void initState() {
@@ -45,10 +45,6 @@ class _pageChat extends State<pageChat> {
           child: Text("채팅 목록", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
         ),
       ),
-      // body: ListView.builder(
-      //   itemCount: _chatRooms.length,
-      //   itemBuilder: (_, int index) => ChatRoomListItem(chatRoom: _chatRooms[index]),
-      // ),
       body: SafeArea(
         child: ListView.separated(
             itemBuilder: (_, int index) => ChatRoomListItem(chatRoom: _chatRooms[index]),
@@ -62,7 +58,7 @@ class _pageChat extends State<pageChat> {
 
 class ChatRoomListItem extends StatelessWidget {
   final ChatRoom chatRoom;
-  ChatRoomListItem({required this.chatRoom});
+  const ChatRoomListItem({super.key, required this.chatRoom});
 
   @override
   Widget build(BuildContext context) {
