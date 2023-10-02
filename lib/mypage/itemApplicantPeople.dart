@@ -3,17 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:smartcalling/board/people/pagePeopleInfo.dart';
+import 'package:smartcalling/mypage/pageApplicantPeopleInfo.dart';
 
 import '../../firebase_options.dart';
 import '../../main.dart';
 
-class itemPeople extends StatefulWidget {
-  final QueryDocumentSnapshot<Object?> doc;
+class itemApplicantPeople extends StatefulWidget {
+  final DocumentSnapshot<Object?> doc;
   late Map<String, List<String>> cities;
 
   bool mPick = false;
 
-  itemPeople({super.key, required this.doc}) {
+  itemApplicantPeople({super.key, required this.doc}) {
     var citiesData = doc['cities'];
     if (citiesData is Map<String, dynamic>) {
       cities = citiesData.map((key, value) => MapEntry(key, List<String>.from(value)));
@@ -23,9 +24,9 @@ class itemPeople extends StatefulWidget {
   }
 
   @override
-  _ItemPeopleState createState() => _ItemPeopleState();
+  _ItemApplicantPeopleState createState() => _ItemApplicantPeopleState();
 }
-class _ItemPeopleState extends State<itemPeople> {
+class _ItemApplicantPeopleState extends State<itemApplicantPeople> {
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class _ItemPeopleState extends State<itemPeople> {
         final User? currentUser = FirebaseAuth.instance.currentUser;
         final dataEdu = await FirebaseFirestore.instance
             .collection('resume')
-            .doc(currentUser!.uid)
+            .doc(widget.doc.id)
             .collection('education')
             .get();
         List<Map<String, dynamic>> eduDataList = [];
@@ -43,7 +44,7 @@ class _ItemPeopleState extends State<itemPeople> {
         }
         final dataCareer = await FirebaseFirestore.instance
             .collection('resume')
-            .doc(currentUser!.uid)
+            .doc(widget.doc.id)
             .collection('career')
             .get();
         List<Map<String, dynamic>> careerDataList = [];
@@ -54,7 +55,7 @@ class _ItemPeopleState extends State<itemPeople> {
         Navigator.push(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => pagePeopleInfo(doc: widget.doc,education: eduDataList, career: careerDataList),
+            pageBuilder: (context, animation, secondaryAnimation) => pageApplicantPeopleInfo(doc: widget.doc, education: eduDataList, career: careerDataList),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               var begin = Offset(0.0, 1.0);
               var end = Offset.zero;
@@ -112,28 +113,7 @@ class _ItemPeopleState extends State<itemPeople> {
             ],
           )
       ),
-      trailing:
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconButton(
-            icon: Icon(
-              widget.mPick ? Icons.star_rounded : Icons.star_outline_rounded,
-              size: 40,
-              color:
-              customGreenAccent,
-            ),
-            onPressed: () {
-              setState(() {
-                widget.mPick = !widget.mPick;
-                // widget.onPickChanged(widget.mPick);
-              });
-            },
-            padding: EdgeInsets.all(0),
-            alignment: Alignment.center,
-          ),
-        ],
-      ),
+      trailing: null,
     );
   }
 }

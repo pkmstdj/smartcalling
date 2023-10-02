@@ -1,13 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
 import 'ChatClasses.dart';
 import 'package:intl/intl.dart';
 
 class PageChatRoom extends StatefulWidget {
-  final ChatRoom chatRoom;
-  final String currentUser;
-
-  PageChatRoom({required this.chatRoom, required this.currentUser});
+  // final User? currentUser = FirebaseAuth.instance.currentUser;
+  // final ChatRoom chatRoom;
+  final QueryDocumentSnapshot<Object?> doc;
+  final String email;
+  final String name;
+  PageChatRoom({super.key, required this.doc, required this.email, required this.name});
 
   @override
   _PageChatRoomState createState() => _PageChatRoomState();
@@ -21,7 +25,17 @@ class _PageChatRoomState extends State<PageChatRoom> {
   @override
   void initState() {
     super.initState();
-    _messages = widget.chatRoom.messages; // ChatRoom의 messages를 _messages에 복사
+    // FirebaseFirestore firestore = FirebaseFirestore.instance;
+    //
+    // firestore.collection('chats').doc(widget.doc.id).collection('msg').orderBy('dateTime').get().then((value) =>
+    // {
+    //   setState(() {
+    //     _messages = value.docs.map((doc) {
+    //       return ChatMessage.fromJson(doc.data());
+    //     } ).toList();
+    //   })
+    // });
+    // _messages = widget.chatRoom.messages; // ChatRoom의 messages를 _messages에 복사
   }
 
   bool _isSameDay(DateTime date1, DateTime date2) {
@@ -36,7 +50,7 @@ class _PageChatRoomState extends State<PageChatRoom> {
   }
 
   Widget _buildMessage(ChatMessage message, {required bool showTime}) {
-    final isMyMessage = message.senderName == widget.currentUser;
+    final isMyMessage = message.senderName == widget.email;
     final backgroundColor = isMyMessage ? customGreenAccent : Colors.white;
     final fontColor = isMyMessage ? Colors.white : Colors.black;
     final align = isMyMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start;
@@ -148,35 +162,110 @@ class _PageChatRoomState extends State<PageChatRoom> {
   }
 
   Widget _buildMessageList() {
-    return ListView.builder(
-      controller: _scrollController, // ScrollController 할당
-      padding: EdgeInsets.all(8.0),
-      reverse: true,
-      itemCount: _messages.length + 1, // 첫 번째 메시지의 날짜 구분 기호를 포함하려면 1을 더해야 합니다.
-      itemBuilder: (context, index) {
-        if (index == _messages.length) {
-          return _buildMessageDate(_messages.first.dateTime);
+    return StreamBuilder<QuerySnapshot>(
+      // Firestore의 chats 컬렉션으로부터 실시간 스트림을 가져옵니다.
+      stream: FirebaseFirestore.instance.collection('chats').doc(widget.doc.id).collection('msg').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        // 에러 발생시
+        if (snapshot.hasError) {
+          return Center(child: Text('Something went wrong'));
         }
 
-        final adjustedIndex = _messages.length - 1 - index; // 인덱스를 조정하여 날짜 구분 기호를 고려합니다.
-        final message = _messages[adjustedIndex];
-        final prevMessage = adjustedIndex > 0 ? _messages[adjustedIndex - 1] : null;
-        final nextMessage = adjustedIndex < _messages.length - 1 ? _messages[adjustedIndex + 1] : null;
-        final showTime = nextMessage == null || message.dateTime != nextMessage.dateTime || message.senderName != nextMessage.senderName;
-
-        // 이전 메시지가 다른 날짜인 경우, 날짜 구분 위젯을 추가합니다.
-        if (prevMessage != null && !_isSameDay(prevMessage.dateTime, message.dateTime)) {
-          return Column(
-            children: [
-              _buildMessageDate(message.dateTime),
-              _buildMessage(message, showTime: showTime),
-            ],
-          );
-        } else {
-          return _buildMessage(message, showTime: showTime);
+        // 데이터 로딩 중
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
         }
+
+        // Firestore로부터 데이터를 실시간으로 가져옵니다.
+        final docs = snapshot.data!.docs;
+        final List<ChatMessage> _messages = docs.map((doc) {
+          final data = doc.data();
+          if (data != null) {
+            return ChatMessage.fromJson(data as Map<String, dynamic>);
+          }
+          return null;
+        }).where((message) => message != null).toList().cast<ChatMessage>();
+
+
+        return ListView.builder(
+          controller: _scrollController,
+          padding: EdgeInsets.all(8.0),
+          reverse: true,
+          itemCount: _messages.length + 1,
+          itemBuilder: (context, index) {
+            if (index == _messages.length) {
+              if (_messages.isNotEmpty) {
+                return _buildMessageDate(_messages.first.dateTime);
+              } else {
+                return SizedBox.shrink();  // 빈 위젯을 반환
+              }
+            }
+
+
+            final adjustedIndex = _messages.length - 1 - index; // 인덱스를 조정하여 날짜 구분 기호를 고려합니다.
+            final message = _messages[adjustedIndex];
+            final prevMessage = adjustedIndex > 0 ? _messages[adjustedIndex - 1] : null;
+            final nextMessage = adjustedIndex < _messages.length - 1 ? _messages[adjustedIndex + 1] : null;
+            final showTime = nextMessage == null || message.dateTime != nextMessage.dateTime || message.senderName != nextMessage.senderName;
+
+            if(message.unread) {
+              if(message.senderName != widget.email) {
+                message.unread = false;
+
+                FirebaseFirestore.instance.collection('chats').doc(widget.doc.id).collection('msg').doc(message.dateTimeString).update(message.toJson());
+              }
+            }
+
+            // 이전 메시지가 다른 날짜인 경우, 날짜 구분 위젯을 추가합니다.
+            if (prevMessage != null && !_isSameDay(prevMessage.dateTime, message.dateTime)) {
+              return Column(
+                children: [
+                  _buildMessageDate(message.dateTime),
+                  _buildMessage(message, showTime: showTime),
+                ],
+              );
+            } else {
+              return _buildMessage(message, showTime: showTime);
+            }
+          },
+        );
       },
     );
+
+    // return ListView.builder(
+    //   controller: _scrollController, // ScrollController 할당
+    //   padding: EdgeInsets.all(8.0),
+    //   reverse: true,
+    //   itemCount: _messages.length + 1, // 첫 번째 메시지의 날짜 구분 기호를 포함하려면 1을 더해야 합니다.
+    //   itemBuilder: (context, index) {
+    //     if (index == _messages.length) {
+    //       if (_messages.isNotEmpty) {
+    //         return _buildMessageDate(_messages.first.dateTime);
+    //       } else {
+    //         return SizedBox.shrink();  // 빈 위젯을 반환
+    //       }
+    //     }
+    //
+    //
+    //     final adjustedIndex = _messages.length - 1 - index; // 인덱스를 조정하여 날짜 구분 기호를 고려합니다.
+    //     final message = _messages[adjustedIndex];
+    //     final prevMessage = adjustedIndex > 0 ? _messages[adjustedIndex - 1] : null;
+    //     final nextMessage = adjustedIndex < _messages.length - 1 ? _messages[adjustedIndex + 1] : null;
+    //     final showTime = nextMessage == null || message.dateTime != nextMessage.dateTime || message.senderName != nextMessage.senderName;
+    //
+    //     // 이전 메시지가 다른 날짜인 경우, 날짜 구분 위젯을 추가합니다.
+    //     if (prevMessage != null && !_isSameDay(prevMessage.dateTime, message.dateTime)) {
+    //       return Column(
+    //         children: [
+    //           _buildMessageDate(message.dateTime),
+    //           _buildMessage(message, showTime: showTime),
+    //         ],
+    //       );
+    //     } else {
+    //       return _buildMessage(message, showTime: showTime);
+    //     }
+    //   },
+    // );
   }
 
   Widget _buildMessageDate(DateTime date) {
@@ -244,7 +333,7 @@ class _PageChatRoomState extends State<PageChatRoom> {
         ),
         title: PreferredSize(
           preferredSize: const Size.fromHeight(0.0),
-          child: Text(widget.chatRoom.roomName, style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
+          child: Text(widget.name, style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
         ),
         actions: [
           IconButton(
@@ -313,18 +402,29 @@ class _PageChatRoomState extends State<PageChatRoom> {
   }
 
 
-  void _handleSubmit(String text) {
+  Future<void> _handleSubmit(String text) async {
     _textController.clear();
+
+    DateTime now = DateTime.now();
+
     final message = ChatMessage(
-      senderName: widget.currentUser,
+      senderName: widget.email,
       content: text,
       unread: true,
-      dateTime: DateTime.now(),
-      currentUser: widget.currentUser,
+      dateTime: now,
+      dateTimeString: now.toString(),
+      currentUser: widget.email,
     );
-    setState(() {
-      _messages.add(message); // 메시지 추가
-      _scrollController.animateTo(0, duration: Duration.zero, curve: Curves.linear);
+
+    FirebaseFirestore.instance.collection('chats').doc(widget.doc.id).collection('msg').doc(now.toString()).set(message.toJson());
+    FirebaseFirestore.instance.collection('chats').doc(widget.doc.id).update({
+      'update': now,
+      'last': text,
     });
+
+    // setState(() {
+    //   _messages.add(message); // 메시지 추가
+    //   _scrollController.animateTo(0, duration: Duration.zero, curve: Curves.linear);
+    // });
   }
 }

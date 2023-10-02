@@ -37,7 +37,19 @@ dependencies:
   cupertino_icons: ^1.0.2
   fluttertoast: ^8.2.1
   image_picker: ^0.8.7
-  intl: ^0.18.1
+  intl: ^0.17.0
+
+  firebase_core: ^2.11.0
+  firebase_auth: ^4.5.0
+  google_sign_in: ^6.1.0
+  cloud_firestore: ^4.6.0
+
+  daum_postcode_search: ^0.0.2
+  flutter_inappwebview: ^5.7.2+3
+
+  flutter_riverpod: ^2.3.6
+  http: ^0.13.6
+  dio: ^5.1.2
 
 dev_dependencies:
   flutter_test:

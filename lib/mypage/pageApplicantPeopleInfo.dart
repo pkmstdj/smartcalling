@@ -1,20 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:smartcalling/chat/pageChat.dart';
 
 import '../../main.dart';
 import '../../firebase_options.dart';
 
-class pagePeopleInfo extends StatelessWidget {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-  final QueryDocumentSnapshot<Object?> doc;
+class pageApplicantPeopleInfo extends StatelessWidget {
+  final DocumentSnapshot<Object?> doc;
   late Map<String, List<String>> cities;
 
   late final name;
-  late final email;
   late final birth;
   late final position;
   late final platform;
@@ -28,9 +25,7 @@ class pagePeopleInfo extends StatelessWidget {
   late final etc;
   List<Map<String, dynamic>> career;
 
-  late String myName;
-
-  pagePeopleInfo({super.key, required this.doc, required this.education, required this.career}) {
+  pageApplicantPeopleInfo({super.key, required this.doc, required this.education, required this.career}) {
     var citiesData = doc['cities'];
     if (citiesData is Map<String, dynamic>) {
       cities = citiesData.map((key, value) => MapEntry(key, List<String>.from(value)));
@@ -38,7 +33,6 @@ class pagePeopleInfo extends StatelessWidget {
       // Handle the case where citiesData is not of the expected type
     }
     name = doc['name'];
-    email = doc['email'];
     birth = doc['birth'];
     position = doc['position'];
     platform = doc['platform'];
@@ -49,9 +43,6 @@ class pagePeopleInfo extends StatelessWidget {
     marriage = doc['marriage'];
     military = doc['military'];
     etc = doc['etc'];
-
-    _firestore.collection("resume").where('email', isEqualTo: currentUser!.email).get().then((value) => {myName = value.docs.first['name']});
-
   }
   Widget displaySelectedCities(Map<String, List<String>> cities) {
     String displayText = generateSelectedCitiesText(cities);
@@ -186,12 +177,6 @@ class pagePeopleInfo extends StatelessWidget {
             child: Text("사역자 이력서", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: customGreenAccent), maxLines: 1,),
           ),
           actions: [
-            IconButton(
-              icon: Icon(Icons.star_outline_rounded),
-              color: customGreenAccent,
-              onPressed: () {
-              },
-            ),
           ],
         ),
         body: Column(
@@ -266,119 +251,45 @@ class pagePeopleInfo extends StatelessWidget {
               ),
             ),
             Divider(),
-            if(currentUser!.email == email)...[
-              Padding(padding: EdgeInsets.all(20.0),
-                child: SizedBox(
-                  width: double.maxFinite,
-                  child: MaterialButton(
-                    onPressed: () async {
+            Padding(padding: EdgeInsets.all(20.0),
+              child: SizedBox(
+                width: double.maxFinite,
+                child: MaterialButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            pageChat(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          var begin = Offset(0.0, 1.0);
+                          var end = Offset.zero;
+                          var curve = Curves.ease;
 
-                      // final result = await Navigator.push(
-                      //   context,
-                      //   PageRouteBuilder(
-                      //     pageBuilder: (context, animation, secondaryAnimation) =>
-                      //         pageChat(),
-                      //     transitionsBuilder:
-                      //         (context, animation, secondaryAnimation, child) {
-                      //       var begin = Offset(0.0, 1.0);
-                      //       var end = Offset.zero;
-                      //       var curve = Curves.ease;
-                      //
-                      //       var tween = Tween(begin: begin, end: end)
-                      //           .chain(CurveTween(curve: curve));
-                      //
-                      //       return SlideTransition(
-                      //         position: animation.drive(tween),
-                      //         child: child,
-                      //       );
-                      //     },
-                      //     transitionDuration: Duration(milliseconds: 500),
-                      //   ),
-                      // );
-                    },
-                    color: customGreenAccent,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0)),
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                      child: Text(
-                        '수정하기', style: TextStyle(fontSize: 26, color: Colors
-                          .white),),
-                    ),
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                        transitionDuration: Duration(milliseconds: 500),
+                      ),
+                    );
+                  },
+                  color: customGreenAccent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0)),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                    child: Text(
+                      '채팅하기', style: TextStyle(fontSize: 26, color: Colors
+                        .white),),
                   ),
-                ),),
-            ]
-            else...[
-              Padding(padding: EdgeInsets.all(20.0),
-                child: SizedBox(
-                  width: double.maxFinite,
-                  child: MaterialButton(
-                    onPressed: () async {
-                      User? currentUser = FirebaseAuth.instance.currentUser;
-                      var ref = FirebaseFirestore.instance.collection("chats");
-                      var chatDocs = await ref.where(Filter.or(Filter('email', isEqualTo: [email, currentUser!.email]), Filter('email', isEqualTo: [currentUser!.email, email]))).get();
-                      if(chatDocs.docs.isEmpty) {
-                        DateTime now = DateTime.now();
-
-                        String id = ref.doc().id;
-                        FirebaseFirestore.instance.collection("chats").doc(id).set({
-                          'email': [currentUser!.email, email],
-                          'name': [myName, name],
-                          'update': now,
-                          'last': "",
-                        });
-
-                        FirebaseFirestore.instance.collection("users").doc(currentUser!.email).collection("chats").doc(id).set({
-                          'email': email,
-                          'name': name,
-                          'id': id,
-                          'update': now
-                        });
-                        FirebaseFirestore.instance.collection("users").doc(email).collection("chats").doc(id).set({
-                          'email': currentUser!.email,
-                          'name': myName,
-                          'id': id,
-                          'update': now
-                        });
-                      }
-
-
-
-                      // final result = await Navigator.push(
-                      //   context,
-                      //   PageRouteBuilder(
-                      //     pageBuilder: (context, animation, secondaryAnimation) =>
-                      //         pageChat(),
-                      //     transitionsBuilder:
-                      //         (context, animation, secondaryAnimation, child) {
-                      //       var begin = Offset(0.0, 1.0);
-                      //       var end = Offset.zero;
-                      //       var curve = Curves.ease;
-                      //
-                      //       var tween = Tween(begin: begin, end: end)
-                      //           .chain(CurveTween(curve: curve));
-                      //
-                      //       return SlideTransition(
-                      //         position: animation.drive(tween),
-                      //         child: child,
-                      //       );
-                      //     },
-                      //     transitionDuration: Duration(milliseconds: 500),
-                      //   ),
-                      // );
-                    },
-                    color: customGreenAccent,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0)),
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                      child: Text(
-                        '채팅하기', style: TextStyle(fontSize: 26, color: Colors
-                          .white),),
-                    ),
-                  ),
-                ),),
-            ]
+                ),
+              ),),
           ],
         ),
 

@@ -1,27 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:smartcalling/board/pageBoard.dart';
-import 'package:smartcalling/chat/pageChat.dart';
-import 'package:smartcalling/custom_animated_bottom_bar.dart';
-import 'package:smartcalling/home/pageHome.dart';
-import 'package:smartcalling/mypage/pageMyPage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'firebase_options.dart';
+import 'mainHome.dart';
+import 'mainLogin.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: customGreenAccent,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(ProviderScope(child: MyApp()));
 }
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];
@@ -45,110 +35,113 @@ MaterialColor createMaterialColor(Color color) {
 }
 final Color baseColor = Color(0xFF1EC580);
 final MaterialColor customGreenAccent = createMaterialColor(baseColor);
-// MaterialColor customGreenAccent = const MaterialColor(
-//   0xFF1EC580,
-//   <int, Color>{
-//     50: Color(0xFFE0F2F1),
-//     100: Color(0xFFB2DFDB),
-//     200: Color(0xFF80CBC4),
-//     300: Color(0xFF4DB6AC),
-//     400: Color(0xFF26A69A),
-//     500: Color(0xFF009688),
-//     600: Color(0xFF00897B),
-//     700: Color(0xFF00796B),
-//     800: Color(0xFF00695C),
-//     900: Color(0xFF004D40),
-//   },
-// );
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+Widget buildSelectedAreaClips(Map<String, List<String>> selected) {
+  if (selected.isEmpty) {
+    return SizedBox.shrink();
+  } else {
+    Map<String, List<String>> provinceToCities = {};
+    selected.forEach((province, cities) {
+      if (cities.isNotEmpty) {
+        provinceToCities[province] = cities.map((city) => city).toList();
+      }
+    });
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+    List<Widget> clips = [];
+    provinceToCities.forEach((province, cities) {
+      String citiesText = cities.join(', ');
+      String displayText = cities.length > 1 ? '$province: $citiesText' : '$province $citiesText';
+      clips.add(
+        ClipRRect(
+          // borderRadius: BorderRadius.circular(25.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: customGreenAccent, width: 2),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(13, 3, 13, 3),
+              child: Text(displayText, style: TextStyle(fontSize: 20, color: customGreenAccent),),
+            ),
+          ),
+        ),
+      );
+    });
+    return Container(width: double.infinity, padding: EdgeInsets.all(8), child: Wrap(spacing: 13.0, runSpacing: 6.0, children: clips, alignment: WrapAlignment.start,));
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
+Widget buildSelectedClips(List<String> selectedWorks) {
+  if (selectedWorks.isEmpty) {
+    return SizedBox.shrink();
+  } else {
+    List<Widget> clips = [];
+    selectedWorks.forEach((work) {
+      clips.add(
+        ClipRRect(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: customGreenAccent, width: 2),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(13, 3, 13, 3),
+              child: Text(work, style: TextStyle(fontSize: 20, color: customGreenAccent),),
+            ),
+          ),
+        ),
+      );
+    });
+    return Container(width: double.infinity, padding: EdgeInsets.all(8), child: Wrap(spacing: 13.0, runSpacing: 6.0, children: clips, alignment: WrapAlignment.start,));
+  }
+}
 
-  final _inactiveColor = Colors.grey;
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      // title: 'Flutter Firebase Google Auth',
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      // ),
+      // home: MainPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MainPage(),
+        '/login': (context) => MyLoginPage(),
+        '/home': (context) => MyHomePage(title: 'title'),
+      }
+    );
+  }
+}
 
-  List<Widget> tabPages = List.empty(growable: true);
-  DateTime? _currentBackPressTime;
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () async {
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(builder: (context) => MainLogin()),
+      // );
+      Navigator.of(context).pushReplacementNamed('/login');
+      // Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: getBody(),
-      bottomNavigationBar: _buildBottomBar(),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-
-  Widget _buildBottomBar(){
-    return CustomAnimatedBottomBar(
-      containerHeight: 55,
-      backgroundColor: Colors.white,
-      selectedIndex: _currentIndex,
-      showElevation: true,
-      itemCornerRadius: 24,
-      curve: Curves.easeIn,
-      onItemSelected: (index) => setState(() => _currentIndex = index),
-      items: <BottomNavyBarItem>[
-        BottomNavyBarItem(
-          icon: Icon(Icons.home_filled),
-          title: Text('홈'),
-          activeColor: customGreenAccent,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
-        BottomNavyBarItem(
-          icon: Icon(Icons.paste),
-          title: Text('청빙 공고'),
-          activeColor: customGreenAccent,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
-        BottomNavyBarItem(
-          icon: Icon(Icons.message_rounded),
-          title: Text('채팅'),
-          activeColor: customGreenAccent,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
-        BottomNavyBarItem(
-          icon: Icon(Icons.menu),
-          title: Text('마이 페이지'),
-          activeColor: customGreenAccent,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-
-  Widget getBody() {
-    List<Widget> pages = [
-      pageHome(),
-      pageBoard(),
-      pageChat(),
-      pageMyPage(),
-    ];
-    return IndexedStack(
-      index: _currentIndex,
-      children: pages,
+      body: SafeArea(
+        child: Row(),
+      ),
     );
   }
 }

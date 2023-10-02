@@ -17,7 +17,7 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
 
   List<Widget> get _items => [
     pageChurch(showPickedOnly: _showPickedOnly),
-    pagePeople(),
+    pagePeople(showPickedOnly: _showPickedOnly),
   ];
 
   void _togglePickedOnly() {
@@ -31,6 +31,7 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController (

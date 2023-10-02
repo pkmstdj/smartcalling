@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "449915173434",
+    "firebase_url": "https://smart-calling-adad0-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "smart-calling-adad0",
+    "storage_bucket": "smart-calling-adad0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449915173434:android:42a235128cce5231e2d303",
+        "android_client_info": {
+          "package_name": "com.mnb.smartcalling.smartcalling"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449915173434-bip53ibfs7cudrb2oc1tlka4p720krs7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mnb.smartcalling.smartcalling",
+            "certificate_hash": "b0e830d16e27250223190615858fe1d4c034ed8c"
+          }
+        },
+        {
+          "client_id": "449915173434-lba59upj0q0vo3jdfmi5trvuu4nmtaf8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYNzoiWkeC8kh8P5Y7Ngt4jXyq_KeFGsQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449915173434-cp6ds64gkv0si6g9alr7j30m90c5dmd5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "449915173434-3ef5sl6ak9k5gdec5h9s6ob86rafsoot.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mnb.smartcalling.smartcalling"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

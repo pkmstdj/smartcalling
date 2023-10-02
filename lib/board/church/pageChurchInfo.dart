@@ -1,18 +1,46 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:smartcalling/CustomDialog.dart';
 import 'package:smartcalling/itemCheckBoxText.dart';
 
+import '../../firebase_options.dart';
 import '../../main.dart';
 
 class PageChurchInfo extends StatefulWidget {
+  final QueryDocumentSnapshot<Object?> doc;
+  PageChurchInfo({super.key, required this.doc}) {}
 
   @override
   _PageChurchInfoState createState() => _PageChurchInfoState();
 }
 
 class _PageChurchInfoState extends State<PageChurchInfo> {
+  User? currentUser = FirebaseAuth.instance.currentUser;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool isMine = false;
+  bool already = false;
+  late final _doc;
+
   @override
   void initState() {
     super.initState();
+    setBtn();
+  }
+  Future<void> setBtn() async {
+    if(currentUser?.uid == widget.doc['uid']) {
+      isMine = true;
+    }
+    else {
+      // final d = await _firestore.collection('board').doc(widget.doc.id).collection('applicant').where('uid', isEqualTo: currentUser?.uid).get();
+      _doc = await _firestore.collection('applicant').where('uid', isEqualTo: currentUser?.uid).where('board', isEqualTo: widget.doc.id).get();
+      if(_doc.size > 0) {
+        setState(() {
+          already = true;
+        });
+      }
+    }
   }
 
   @override
@@ -23,7 +51,7 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
         foregroundColor: customGreenAccent,
         centerTitle: true,
         title: Text(
-          '수원삼일교회',
+          '${widget.doc['name']} 공고',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -53,9 +81,25 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
                         buildAddressInfo(),
                         buildRegistrationDates(),
                         buildSeparator(),
-                        buildCategories(),
-                        buildPartTimeInfo(),
-                        buildSalaryInfo(),
+                        Row(
+                          children: [
+                            Text('사역 정보', style: TextStyle(color: Colors.grey, fontSize: 22)),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                        buildList('부서', List<String>.from(widget.doc['work'])),
+                        buildList('직분', List<String>.from(widget.doc['position'])),
+                        buildList('형태', List<String>.from(widget.doc['part'])),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            children: [
+                              Text('사례', style: TextStyle(color: Colors.grey, fontSize: 19)),
+                              SizedBox(width: 16.0),
+                              Expanded(child: Text('${widget.doc['money']} 만원', style: TextStyle(fontSize: 22))),
+                            ],
+                          ),
+                        ),
                         buildSeparator(),
                         buildOtherInfo(),
                       ],
@@ -64,7 +108,7 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
                 ),
             ),
             Divider(),
-            buildChatButton(),
+            buildButton(),
           ],
         ),
       ),
@@ -73,9 +117,9 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
 
   Widget buildHeader() {
     return Text(
-      '예장합동',
+      widget.doc['platform'],
       style: TextStyle(
-        color: Colors.blue,
+        color: customGreenAccent,
         fontSize: 21,
       ),
     );
@@ -86,8 +130,10 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 10),
-        Text('경기도 수원시 영통구 삼성로267번길 2', style: TextStyle(fontSize: 19)),
-        Text('수원삼일교회 건물', style: TextStyle(fontSize: 19)),
+        Text(widget.doc['address0'], style: TextStyle(fontSize: 19)),
+        if(widget.doc['address1'] != '')...[
+          Text(widget.doc['address1'], style: TextStyle(fontSize: 19)),
+        ],
         SizedBox(height: 10),
       ],
     );
@@ -98,11 +144,11 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          '등록날짜 2023.02.28',
+          '등록(수정) ${DateFormat('yyyy-MM-dd').format(TimestempToDate(widget.doc['time']))}',
           style: TextStyle(color: Colors.grey, fontSize: 17),
         ),
         Text(
-          '마감날짜 2023.02.28',
+          '마감 ${DateFormat('yyyy-MM-dd').format(TimestempToDate(widget.doc['limit']))}',
           style: TextStyle(color: Colors.grey, fontSize: 17),
         ),
       ],
@@ -112,48 +158,27 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
   Widget buildSeparator() {
     return Column(
       children: [
-        SizedBox(height: 30),
-        Container(
-          height: 1.3,
-          width: double.infinity,
-          color: Colors.grey.shade400,
-        ),
-        SizedBox(height: 30),
+        SizedBox(height: 16),
+        Divider(thickness: 1.0, ),
+        SizedBox(height: 16),
       ],
     );
   }
 
-  Widget buildCategories() {
-    return buildInfoRow(
-      '분야',
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildList(String title, List<String> contents) {
+    String str = '';
+    for(int i = 0 ; i < contents.length ; i ++ ) {
+      str += contents[i];
+      if(i < contents.length - 1) str += ', ';
+    }
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
         children: [
-          buildCheckboxRow(["청년부", "청소년부"], [true, true]),
-          buildCheckboxRow(["방송", "뭐그런"], [false, false]),
-          buildCheckboxRow(["여러가지", "부서들"], [false, false]),
+          Text(title, style: TextStyle(color: Colors.grey, fontSize: 19)),
+          SizedBox(width: 16.0),
+          Expanded(child: Text(str, style: TextStyle(fontSize: 22))),
         ],
-      ),
-    );
-  }
-  Widget buildPartTimeInfo() {
-    return buildInfoRow(
-      '파트',
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildCheckboxRow(["풀타임", "파트타임"], [false, true]),
-        ],
-      ),
-    );
-  }
-
-  Widget buildSalaryInfo() {
-    return buildInfoRow(
-      '사례금',
-      Text(
-        '3,500,000',
-        style: TextStyle(fontSize: 19),
       ),
     );
   }
@@ -168,7 +193,7 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
         ),
         SizedBox(height: 15),
         Text(
-          '먹이를 찾아 산기슭을 어슬렁거리는 하이에나를 본 일이 있는가 짐승의 썩은 고기만을 찾아다니는 산기슭의 하이에나 나는 하이에나가 아니라 표범이고 싶다 산정 높이 올라가 굶어서 얼어 죽는 눈 덮인 킬리만자로의 그 표범이고 싶다 자고나면 위대해지고 자고나면 초라해지는 나는 지금 지구의 어두운 모퉁이에서 잠시 쉬고 있다 먹이를 찾아 산기슭을 어슬렁거리는 하이에나를 본 일이 있는가 짐승의 썩은 고기만을 찾아다니는 산기슭의 하이에나 나는 하이에나가 아니라 표범이고 싶다 산정 높이 올라가 굶어서 얼어 죽는 눈 덮인 킬리만자로의 그 표범이고 싶다 자고나면 위대해지고 자고나면 초라해지는 나는 지금 지구의 어두운 모퉁이에서 잠시 쉬고 있다',
+          widget.doc['info'],
           style: TextStyle(fontSize: 19),
         ),
         SizedBox(height: 30),
@@ -176,52 +201,78 @@ class _PageChurchInfoState extends State<PageChurchInfo> {
     );
   }
 
-  Widget buildChatButton() {
+  Widget buildButton() {
     return Padding(padding: EdgeInsets.all(20.0),
       child: SizedBox(
         width: double.maxFinite,
         child: MaterialButton(
-          onPressed: () {},
-          color: customGreenAccent,
+          onPressed: () async {
+            if(isMine) {
+
+            }
+            else if(already) {
+              bool? c = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  child: CustomDialog(title: '지원 취소', content: "지원 취소 하시겠습니까?"),
+                ),
+              );
+              if(c != null && c) {
+                _firestore.collection('applicant').doc(_doc.docs[0].id).delete();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('지원이 취소 되었습니다.', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),),
+                    backgroundColor: Colors.redAccent,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+                setState(() {
+                  already = false;
+                });
+              }
+            }
+            else {
+              bool? c = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  child: CustomDialog(title: '지원 확인', content: "지원 하시겠습니까?"),
+                ),
+              );
+              if(c != null && c) {
+                _firestore.collection('applicant').doc().set({
+                  'time': DateTime.now(),
+                  'uid': currentUser?.uid,
+                  'board': widget.doc.id,
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('지원이 완료 되었습니다..', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),),
+                    backgroundColor: customGreenAccent.shade200,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+                setState(() {
+                  already = true;
+                });
+              }
+            }
+          },
+          color: already ? Colors.redAccent : customGreenAccent,
           shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(7.0)),
           child: Container(
             padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-            child: Text('채팅하기', style: TextStyle(fontSize: 19, color: Colors.white),),
+            child:
+              isMine ? Text('내 공고 이동', style: TextStyle(fontSize: 19, color: Colors.white),) :
+              already ? Text('지원취소', style: TextStyle(fontSize: 19, color: Colors.white),) :
+              Text('지원하기', style: TextStyle(fontSize: 19, color: Colors.white),),
           ),
         ),
       ),
     );
   }
 
-  Widget buildInfoRow(String title, Widget content) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 60,
-            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-            child: Text(
-              title,
-              style: TextStyle(fontSize: 19, color: Colors.grey),
-            ),
-          ),
-          SizedBox(width: 15),
-          Expanded(child: content),
-        ],
-      ),
-    );
-  }
-  Widget buildCheckboxRow(List<String> texts, List<bool> values) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: texts.asMap().entries.map<Widget>((entry) {
-        int index = entry.key;
-        String text = entry.value;
-        bool value = values[index];
-        return itemCheckBoxText(width: 110, text: Text(text, style: TextStyle(fontSize: 18)), value: value, onChanged: null);
-      }).toList(),
-    );
-  }
 }
