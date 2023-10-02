@@ -73,6 +73,12 @@ class _MyLoginPageState extends ConsumerState<MyLoginPage> {
       }
       else if(Platform.isIOS) {
 
+        googleSignIn = GoogleSignIn(
+          scopes: [
+            'email',
+            'https://www.googleapis.com/auth/contacts.readonly',
+          ],);
+
       }
       else {
       }
