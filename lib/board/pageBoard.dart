@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartcalling/Popover.dart';
 import 'package:smartcalling/board/church/pageChurch.dart';
 import 'package:smartcalling/board/people/pagePeople.dart';
 
@@ -70,7 +71,23 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
                         flex: 1,
                         child: MaterialButton(
                           padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                          onPressed: () {},
+                          onPressed: () {
+
+                            showModalBottomSheet<int>(
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (context) {
+                                return Popover(
+                                  child: Container(
+                                    height: 350,
+                                    color: Colors.white,
+                                    child: SingleChildScrollView(
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                           child: Icon(Icons.filter_alt_outlined, color: Colors.grey, size: 30,),
                         )
                     ),
