@@ -7,18 +7,20 @@ class Popover extends StatelessWidget {
   //   required this.child,
   // }) : super(key: key);
 
-  Popover({super.key, required this.child}) {}
-
   final Widget child;
+  final VoidCallback? onItemTapped;
+
+  const Popover({Key? key, required this.child, this.onItemTapped}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(16.0),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

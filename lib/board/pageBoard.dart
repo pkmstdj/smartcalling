@@ -7,6 +7,7 @@ import '../main.dart';
 
 
 class pageBoard extends StatefulWidget {
+  List<bool> positions = [true, true, true];
   @override
   State<StatefulWidget> createState() {
     return _pageBoard();
@@ -73,20 +74,7 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
                           padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                           onPressed: () {
 
-                            showModalBottomSheet<int>(
-                              backgroundColor: Colors.transparent,
-                              context: context,
-                              builder: (context) {
-                                return Popover(
-                                  child: Container(
-                                    height: 350,
-                                    color: Colors.white,
-                                    child: SingleChildScrollView(
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
+                            _showModalBottomSheet(context);
                           },
                           child: Icon(Icons.filter_alt_outlined, color: Colors.grey, size: 30,),
                         )
@@ -105,5 +93,146 @@ class _pageBoard extends State<pageBoard> with TickerProviderStateMixin {
           )
       ),
     );
+  }
+  void _showModalBottomSheet(BuildContext mainContext) {
+    showModalBottomSheet<int>(
+      backgroundColor: Colors.transparent,
+      context: mainContext,
+      builder: (context) {
+        return Popover(
+          child: Container(
+            height: 350,
+            color: Colors.white,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildCheckPosition(),
+                ],
+              ),
+            ),
+          ),
+          onItemTapped: () {
+            Navigator.of(context).pop();
+            setState(() {});
+          },
+        );
+      },
+    );
+  }
+  Widget _buildCheckPosition() {
+    return Builder(
+        builder: (context) {
+          final popover = context.findAncestorWidgetOfExactType<Popover>();
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        widget.positions[0] = !widget.positions[0];
+                      });
+                      if (popover?.onItemTapped != null) {
+                        popover?.onItemTapped!();  // 콜백 호출
+                      }
+                    },
+                    child: Container(
+                      width: 130,
+                      height: 40,
+                      alignment: Alignment.center,
+                      padding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: widget.positions[0]
+                            ? customGreenAccent
+                            : Colors.grey.shade200,
+                      ),
+                      child: Text(
+                        "전도사",
+                        style: TextStyle(
+                          fontSize: 22,
+                          color:
+                          widget.positions[0] ? Colors.white : Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 2, left: 2),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        widget.positions[1] = !widget.positions[1];
+                      });
+                    },
+                    child: Container(
+                      width: 130,
+                      height: 40,
+                      alignment: Alignment.center,
+                      padding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: widget.positions[1]
+                            ? customGreenAccent
+                            : Colors.grey.shade200,
+                      ),
+                      child: Text(
+                        "강도사",
+                        style: TextStyle(
+                          fontSize: 22,
+                          color:
+                          widget.positions[1] ? Colors.white : Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 30),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        widget.positions[2] = widget.positions[2];
+                      });
+                    },
+                    child: Container(
+                      width: 130,
+                      height: 40,
+                      alignment: Alignment.center,
+                      padding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: widget.positions[2]
+                            ? customGreenAccent
+                            : Colors.grey.shade200,
+                      ),
+                      child: Text(
+                        "목사",
+                        style: TextStyle(
+                          fontSize: 22,
+                          color:
+                          widget.positions[2] ? Colors.white : Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+    );
+
   }
 }
